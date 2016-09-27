@@ -13,6 +13,6 @@
     ],
     "require": {
         "drupal/flysystem": "1.x-dev",
-        "nimbusoftltd/flysystem-openstack-swift": "~0.1"
+        "nimbusoft/flysystem-openstack-swift": "~0.1"
     }
 }
