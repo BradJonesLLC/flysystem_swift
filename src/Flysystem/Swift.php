@@ -76,13 +76,17 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
 
   /**
    * Retrieves a temporary URL from the Object Storage endpoint.
+   * 
+   * Use with caution when the resulting URL may be cached beyond its validity.
+   * 
+   * @param string $uri The uri to retrieve a temporary URI for.
    */
-  public function getExternalUrl($uri) {
+  public function getTemporaryUrl($uri) {
     $uri = str_replace('\\', '/', $this->getTarget($uri));
     $client = new OpenStack($this->configuration);
-    // @todo - Tie the state storage to a hash of the config?
-    // @todo - Do we need to handle rotation?
-    if (!$key = $this->state->get('flysystem_swift.tempkey')) {
+    // Base the state storage on the hash of the plugin config.
+    $hash = md5(serialize($this->configuration));
+    if (!$config = $this->state->get('flysystem_swift.' . $hash)) {
       $account = $client->objectStoreV1()->getAccount();
       $account->retrieve();
       if (!$key = $account->tempUrl) {
@@ -91,12 +95,15 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
         $client->objectStoreV1()
           ->execute($this->api->postAccount(), ['tempUrlKey' => $key]);
       }
-      $this->state->set('flysystem_swift.tempkey', $key);
+      // The only way to get a base path/service URL is from a Token.
+      $token = $client->identityV3()->generateToken(['user' => $this->configuration['user']]);
+      $basePath = $token->catalog
+        ->getServiceUrl('swift', 'object-store', $this->configuration['region'], 'public');
+      $this->state->set('flysystem_swift.' . $hash, ['key' => $key, 'basePath' => $basePath]);
     }
-    // The only way to get a base path/service URL is from a Token.
-    $token = $client->identityV3()->generateToken(['user' => $this->configuration['user']]);
-    $basePath = $token->catalog
-      ->getServiceUrl('swift', 'object-store', $this->configuration['region'], 'public');
+    else {
+      extract($config);
+    }
     $path = parse_url($basePath)['path'];
     $resource = '/' . $this->configuration['container'] . '/' . $uri;
     $url = Url::fromUri($basePath . $resource, ['query' => $this->generateTempQuery($path . $resource, $key)]);
