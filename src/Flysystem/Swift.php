@@ -3,14 +3,13 @@
 namespace Drupal\flysystem_swift\Flysystem;
 
 use Drupal\Component\Utility\Random;
-use Drupal\Console\Command\User\PasswordHashCommand;
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
 use Drupal\flysystem\Plugin\FlysystemPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemUrlTrait;
 use Nimbusoft\Flysystem\OpenStack\SwiftAdapter;
-use OpenStack\Identity\v3\Models\Catalog;
 use OpenStack\ObjectStore\v1\Api;
 use OpenStack\OpenStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -130,7 +129,11 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
           ['name' => $this->configuration['container']]);
     }
     catch (\Throwable $e) {
-      $errors[] = $e->getCode() . ': ' . $e->getMessage();
+      $errors[] = [
+        'severity' => RfcLogLevel::ERROR,
+        'message' => $e->getMessage(),
+        'context' => $this->configuration,
+      ];
     }
     return $errors;
   }
