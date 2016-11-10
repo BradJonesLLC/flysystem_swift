@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Drupal plugin for Swift Flysystem adapter.
- * 
+ *
  * @Adapter(id = "swift")
  */
 class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface {
@@ -32,7 +32,7 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
 
   /**
    * Plugin configuration.
-   * 
+   *
    * @var array
    */
   protected $configuration;
@@ -75,9 +75,9 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
 
   /**
    * Retrieves a temporary URL from the Object Storage endpoint.
-   * 
+   *
    * Use with caution when the resulting URL may be cached beyond its validity.
-   * 
+   *
    * @param string $uri The uri to retrieve a temporary URI for.
    */
   public function getTemporaryUrl($uri) {
@@ -132,7 +132,7 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
       $errors[] = [
         'severity' => RfcLogLevel::ERROR,
         'message' => $e->getMessage(),
-        'context' => $this->configuration,
+        'context' => [],
       ];
     }
     return $errors;
