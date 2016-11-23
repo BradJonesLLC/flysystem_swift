@@ -9,7 +9,7 @@ use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
 use Drupal\flysystem\Plugin\FlysystemPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemUrlTrait;
-use Nimbusoft\Flysystem\OpenStack\SwiftAdapter;
+use Drupal\flysystem_swift\SwiftAdapter;
 use OpenStack\ObjectStore\v1\Api;
 use OpenStack\OpenStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -64,7 +64,7 @@ class Swift implements FlysystemPluginInterface, ContainerFactoryPluginInterface
   }
 
   /**
-   * @return SwiftAdapter
+   * @return \Drupal\flysystem_swift\SwiftAdapter
    */
   public function getAdapter() {
     $client = new OpenStack($this->configuration);
