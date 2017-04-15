@@ -1,5 +1,6 @@
 name: Flysystem OpenStack Swift
 description: 'Provides a Swift plugin for Flysystem.'
+package: Flysystem
 type: module
 core: 8.x
 dependencies:
